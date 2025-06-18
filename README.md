@@ -264,18 +264,14 @@ cd nerf-pytorch
 pip install -r requirements.txt
 ```
 
-## 快速开始
-1. 下载示例数据：
-```bash
-bash download_example_data.sh
-```
+## 开始
 
-2. 训练模型：
+1. 训练模型：
 ```bash
 python run_nerf.py --config configs/lego.txt
 ```
 
-3. 渲染测试：
+2. 渲染测试：
 ```bash
 python run_nerf.py --config configs/lego.txt --render_only
 ```
