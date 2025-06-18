@@ -277,3 +277,134 @@ python run_nerf.py --config configs/lego.txt --render_only
 ```
 
 
+# 3D Gaussian Splatting (3DGS)
+
+## Table of Contents
+1. [Deployment](#deployment)
+2. [Training with Sample Data](#training-with-sample-data)
+3. [Using Custom Data](#using-custom-data)
+4. [Model Evaluation and Viewing](#model-evaluation-and-viewing)
+5. [References](#references)
+
+## Deployment
+
+### Hardware Requirements
+- **GPU**: NVIDIA GeForce RTX 4090 (or equivalent)
+
+### Software Requirements
+- **Operating System**: Windows 11
+- **Python**: 3.10
+- **CUDA Toolkit**: 12.3
+- **PyTorch**: 2.2.1
+- **Visual Studio**: 2022
+- **Conda**: For environment management
+
+### Installation Steps
+1. Clone the repository with submodules:
+   ```bash
+   git clone https://github.com/graphdeco-inria/gaussian-splatting --recursive
+   cd gaussian-splatting
+   ```
+
+2. Create and activate a Conda environment:
+   ```bash
+   conda create -n gaussian_splatting python=3.10
+   conda activate gaussian_splatting
+   ```
+
+3. Install Visual Studio 2022:
+   ```bash
+   conda install -c conda-forge vs2022_win-64
+   ```
+
+4. Install PyTorch 2.2.1 with CUDA 12.1:
+   ```bash
+   pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+   ```
+
+5. Set environment variable for Distutils:
+   ```bash
+   SET DISTUTILS_USE_SDK=1
+   ```
+
+6. Install required Python packages:
+   ```bash
+   pip install submodules\diff-gaussian-rasterization
+   pip install submodules\simple-knn
+   pip install plyfile
+   pip install tqdm
+   ```
+
+## Training with Sample Data
+
+### Data Download
+Download the following dataset for training and evaluation:
+
+- **Viewers for Windows (60MB)**: Compiled SIBR point cloud viewer tool.
+
+
+### Training Process
+Run the following command to start training:
+```bash
+python train.py -s <path to COLMAP or NeRF Synthetic dataset> --iterations <number of iterations>
+```
+
+
+### Viewing Training Process
+Use the `SIBR_remoteGaussian_app` viewer to monitor the training process:
+```bash
+cd <path to viewers\bin>
+.\SIBR_remoteGaussian_app.exe
+```
+
+## Using Custom Data
+
+### Data Preparation
+1. **Extract Frames from Video**:
+   - Use `ffmpeg` to extract frames from a video:
+     ```bash
+     ffmpeg -i input.mp4 -vf "setpts=0.2*PTS" input/input_%4d.jpg
+     ```
+   - Download `ffmpeg` from [here](https://www.gyan.dev/ffmpeg/builds/).
+
+2. **Convert Images Using COLMAP**:
+   - Install COLMAP and add it to the system PATH.
+   - Run the following command to convert images:
+     ```bash
+     colmap automatic_reconstructor --workspace_path . --image_path ./images --sparse 1 --camera_model SIMPLE_PINHOLE --dense 0
+     ```
+
+3. **Optional: Resize Images**:
+   - Use ImageMagick for resizing images if necessary.
+
+### Training with Custom Data
+Follow the same training command as mentioned in the [Training with Sample Data](#training-with-sample-data) section.
+
+## Model Evaluation and Viewing
+
+### Model Output
+Trained models are saved in the `output` folder (or a specified directory).
+
+### Real-Time Viewer
+Use the `SIBR_gaussianViewer_app` to view the trained point clouds:
+```bash
+cd <path to viewers\bin>
+.\SIBR_gaussianViewer_app.exe -m <path to model folder>
+```
+
+### Evaluation
+Save intermediate results during training:
+```bash
+python train.py -s <path to dataset> --eval
+```
+
+## References
+- [3D Gaussian Splatting GitHub Repository](https://github.com/graphdeco-inria/gaussian-splatting)
+- [COLMAP Repository](https://github.com/colmap/colmap)
+- [ImageMagick](https://imagemagick.org/)
+- [FFmpeg](https://www.ffmpeg.org/)
+- [article on Zhihu](https://zhuanlan.zhihu.com/p/your-article-link).
+
+
+
+
